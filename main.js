@@ -63,12 +63,12 @@ client.on('message', (message) => {
 			message.guild.member(message.author).roles.highest.name === 'Owner') ||
 		message.guild.member(message.author).roles.highest.name === 'Admin'
 	) {
-		const amount = parseInt(args[0]);
+		const amount = parseInt(args[0]) + 1;
 
 		if (isNaN(amount)) {
 			return message.channel.send("that doesn't seem to be a valid number.");
-		} else if (amount < 2 || amount > 100) {
-			return message.reply('you need to input a number between 2 and 100.');
+		} else if (amount <= 1 || amount > 100) {
+			return message.reply('you need to input a number between 1 and 99.');
 		}
 
 		message.channel.bulkDelete(amount, true).catch((err) => {
