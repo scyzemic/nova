@@ -43,6 +43,14 @@ client.on('message', (message) => {
 			);
 		}
 		return message.channel.send(`${args[0]} is soooo fly!`);
+	} else if (command === 'kick') {
+		if (!message.mentions.users.size) {
+			return message.reply('you need to tag a user in order to kick them!');
+		}
+
+		const taggedUser = message.mentions.users.first();
+
+		message.channel.send(`You kicked ${taggedUser.username}, they lose 5HP`);
 	} else if (command === 'args-info') {
 		if (!args.length) {
 			return message.channel.send(
