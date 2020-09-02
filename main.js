@@ -49,16 +49,34 @@ client.on('message', (message) => {
 		}
 
 		const taggedUser = message.mentions.users.first();
+		const hitChance = Math.random() * 10;
 
-		message.channel.send(`You kicked ${taggedUser.username}, they lose 5HP`);
-	} else if (command === 'args-info') {
-		if (!args.length) {
-			return message.channel.send(
-				`You didn't provide any arguments, ${message.author}!`,
+		if (hitChance <= 5.5) {
+			message.channel.send(
+				`You Missed! ${taggedUser.username}, gives you a charly horse. You lose 10HP`,
 			);
+		} else {
+			message.channel.send(`You kicked ${taggedUser.username}, they lose 5HP`);
+		}
+	} else if (
+		(command === 'prune' &&
+			message.guild.member(message.author).roles.highest.name === 'Owner') ||
+		message.guild.member(message.author).roles.highest.name === 'Admin'
+	) {
+		const amount = parseInt(args[0]);
+
+		if (isNaN(amount)) {
+			return message.channel.send("that doesn't seem to be a valid number.");
+		} else if (amount < 2 || amount > 100) {
+			return message.reply('you need to input a number between 2 and 100.');
 		}
 
-		message.channel.send(`Command name: ${command}\nArguments: ${args}`);
+		message.channel.bulkDelete(amount, true).catch((err) => {
+			console.error(err);
+			message.channel.send(
+				'there was an error trying to prune messages in this channel',
+			);
+		});
 	}
 });
 
