@@ -14,7 +14,9 @@ client.once('ready', () => {
 client.on('message', (message) => {
 	// exit early if message doesn't start with the prefix
 	// or the message author is a bot (so we don't have infinite loops)
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+	const fanFavorite = message.content.match(/[hH]ow fly is/);
+	const isValidCommand = fanFavorite || message.content.startsWith(prefix);
+	if (!isValidCommand || message.author.bot) return;
 
 	// parse the message content, list of string w/o the prefix
 	const args = message.content.slice(prefix.length).trim().split(' ');
@@ -22,7 +24,7 @@ client.on('message', (message) => {
 	// TODO - find a way to do this without side effects
 	const command = args.shift().toLocaleLowerCase();
 
-	if (message.content.match(/[hH]ow fly is/)) {
+	if (fanFavorite) {
 		message.channel.send(
 			"they're so fly that when Jim Jones sees them, he goes, BALLIIINNNN!!!",
 		);
@@ -34,6 +36,13 @@ client.on('message', (message) => {
 		message.channel.send(
 			`Your username: ${message.author.username}\nYour ID: ${message.author.id}`,
 		);
+	} else if (command === 'so-fly') {
+		if (!args.length) {
+			return message.channel.send(
+				`You didn't provide any arguments, ${message.author}!`,
+			);
+		}
+		return message.channel.send(`${args[0]} is soooo fly!`);
 	} else if (command === 'args-info') {
 		if (!args.length) {
 			return message.channel.send(
