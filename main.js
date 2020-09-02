@@ -14,12 +14,12 @@ client.once('ready', () => {
 client.on('message', (message) => {
 	// exit early if message doesn't start with the prefix
 	// or the message author is a bot (so we don't have infinite loops)
-	const fanFavorite = message.content.match(/[hH]ow fly is/);
+	const fanFavorite = message.content.match(/[hH]ow fly (is|are)/);
 	const isValidCommand = fanFavorite || message.content.startsWith(prefix);
 	if (!isValidCommand || message.author.bot) return;
 
 	// parse the message content, list of string w/o the prefix
-	const args = message.content.slice(prefix.length).trim().split(' ');
+	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	// parse the command word from the list
 	// TODO - find a way to do this without side effects
 	const command = args.shift().toLocaleLowerCase();
