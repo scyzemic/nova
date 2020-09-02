@@ -1,12 +1,16 @@
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
+// Create a new Discord client instance
 const client = new Discord.Client();
 
+// Listen for 'ready' event
+// This event only triggers once after login
 client.once('ready', () => {
 	console.log('Singularity bot is online!');
 });
 
+// Listen for 'message' event
 client.on('message', (message) => {
 	if (message.content.match(/[hH]ow fly is/)) {
 		message.channel.send(
@@ -23,4 +27,5 @@ client.on('message', (message) => {
 	}
 });
 
+// Login to Discord with the bots token
 client.login(token);
