@@ -9,17 +9,21 @@ module.exports = {
 	execute(message, args) {
 		const data = [];
 		const { commands } = message.client;
-		const { roles } = message.guild.member(message.author);
+		// let roles;
+
+		// if (message.channel.type !== 'dm') {
+		// 	roles = message.guild.member(message.author).roles;
+		// }
 
 		if (!args.length) {
 			data.push("Here's a list of all my commands: ");
 			data.push(
 				commands
-					.filter(
-						(cmd) =>
-							!cmd.roles ||
-							(cmd.roles && cmd.roles.filter((role) => roles.cache.has(role)).length),
-					)
+					// .filter(
+					// 	(cmd) =>
+					// 		!cmd.roles ||
+					// 		(cmd.roles && cmd.roles.filter((role) => roles.cache.has(role)).length),
+					// )
 					.map((cmd) => cmd.name)
 					.join(', '),
 			);
@@ -54,5 +58,7 @@ module.exports = {
 		if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
 
 		data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
+
+		message.channel.send(data, { split: true });
 	},
 };
