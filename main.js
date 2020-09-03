@@ -27,7 +27,11 @@ client.on('message', (message) => {
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
-	const command = client.commands.get(commandName);
+	const command =
+		client.commands.get(commandName) ||
+		client.commands.find(
+			(cmd) => cmd.aliases && cmd.aliases.includes(commandName),
+		);
 
 	if (fanFavorite) {
 		return message.channel.send(
@@ -35,7 +39,7 @@ client.on('message', (message) => {
 		);
 	}
 
-	if (!client.commands.has(commandName)) return;
+	if (!command) return;
 
 	if (command.guildOnly && message.channel.type === 'dm') {
 		return message.reply("I can't execute that command inside DMs!");

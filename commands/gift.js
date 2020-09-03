@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'gift',
+	aliases: ['tip'],
 	usesArgs: true,
 	usage: '<user>',
 	guildOnly: true,
