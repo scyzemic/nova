@@ -8,9 +8,7 @@ module.exports = {
 	description: 'Dip into someones pocket!',
 	execute(message) {
 		if (!message.mentions.users.size) {
-			return message.reply(
-				'you need to tag a user in order to steal from them!',
-			);
+			return message.reply('you need to tag a user in order to steal from them!');
 		}
 
 		const taggedUser = message.mentions.users.first();

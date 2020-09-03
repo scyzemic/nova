@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'kick',
+	aliases: ['punch'],
 	usesArgs: true,
 	usage: '<user>',
 	guildOnly: true,
@@ -15,7 +16,7 @@ module.exports = {
 
 		if (hitChance <= 1) {
 			message.channel.send(
-				`Critical hit! ${taggedUser.username}, you kicked them so hard, some coinds came loose. You gain 10G`,
+				`Critical hit! You kicked ${taggedUser.username} so hard, some coins came loose. You gain 10G`,
 			);
 		} else if (hitChance <= 5.5) {
 			message.channel.send(

@@ -6,9 +6,7 @@ const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 client.commands = new Discord.Collection();
 
-const commandFiles = fs
-	.readdirSync('./commands')
-	.filter((file) => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -29,9 +27,7 @@ client.on('message', (message) => {
 	const commandName = args.shift().toLocaleLowerCase();
 	const command =
 		client.commands.get(commandName) ||
-		client.commands.find(
-			(cmd) => cmd.aliases && cmd.aliases.includes(commandName),
-		);
+		client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (fanFavorite) {
 		return message.channel.send(
