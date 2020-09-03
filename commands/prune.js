@@ -1,8 +1,9 @@
 module.exports = {
 	name: 'prune',
-	args: true,
+	usesArgs: true,
 	usage: '<number>',
 	guildOnly: true,
+	cooldown: 5,
 	description: 'rewind history, one message at a time.',
 	execute(message, args) {
 		const amount = parseInt(args[0]) + 1;

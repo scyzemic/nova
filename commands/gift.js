@@ -1,6 +1,6 @@
 module.exports = {
 	name: 'gift',
-	args: true,
+	usesArgs: true,
 	usage: '<user>',
 	guildOnly: true,
 	description: 'Reward your friends for helping you out!',

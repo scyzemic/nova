@@ -1,6 +1,6 @@
 module.exports = {
 	name: 'so-fly',
-	args: true,
+	usesArgs: true,
 	usage: '<name>',
 	guildOnly: true,
 	description: 'So flyyy!',

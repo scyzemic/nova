@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
 const client = new Discord.Client();
+const cooldowns = new Discord.Collection();
 client.commands = new Discord.Collection();
 
 const commandFiles = fs
@@ -26,6 +27,7 @@ client.on('message', (message) => {
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLocaleLowerCase();
+	const command = client.commands.get(commandName);
 
 	if (fanFavorite) {
 		return message.channel.send(
@@ -35,13 +37,11 @@ client.on('message', (message) => {
 
 	if (!client.commands.has(commandName)) return;
 
-	const command = client.commands.get(commandName);
-
 	if (command.guildOnly && message.channel.type === 'dm') {
 		return message.reply("I can't execute that command inside DMs!");
 	}
 
-	if (command.args && !args.length) {
+	if (command.usesArgs && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}!`;
 
 		if (command.usage) {
@@ -50,6 +50,31 @@ client.on('message', (message) => {
 
 		return message.channel.send(reply);
 	}
+
+	// Cooldowns
+	if (!cooldowns.has(commandName)) {
+		cooldowns.set(commandName, new Discord.Collection());
+	}
+
+	const now = Date.now();
+	const timestamps = cooldowns.get(commandName);
+	const cooldownAmount = (command.cooldown || 3) * 1000;
+
+	if (timestamps.has(message.author.id)) {
+		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+		if (now < expirationTime) {
+			const timeLeft = (expirationTime - now) / 1000;
+			return message.reply(
+				`please wait ${timeLeft.toFixed(
+					1,
+				)} more second(s) before reusing the \`${commandName}\` command.`,
+			);
+		}
+	}
+
+	timestamps.set(message.author.id, now);
+	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
 	try {
 		command.execute(message, args);
