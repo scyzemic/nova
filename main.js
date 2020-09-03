@@ -41,6 +41,17 @@ client.on('message', (message) => {
 		return message.reply("I can't execute that command inside DMs!");
 	}
 
+	if (command.roles) {
+		const { roles } = message.guild.member(message.author);
+		const hasPermission = roles.cache.filter((role) => command.roles.includes(role.name));
+
+		if (!hasPermission) {
+			return message.reply(
+				"you don't have permission to use that command, please ask an Admin for help.",
+			);
+		}
+	}
+
 	if (command.usesArgs && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}!`;
 

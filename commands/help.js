@@ -9,24 +9,12 @@ module.exports = {
 	execute(message, args) {
 		const data = [];
 		const { commands } = message.client;
-		// let roles;
-
-		// if (message.channel.type !== 'dm') {
-		// 	roles = message.guild.member(message.author).roles;
-		// }
 
 		if (!args.length) {
 			data.push("Here's a list of all my commands: ");
-			data.push(
-				commands
-					// .filter(
-					// 	(cmd) =>
-					// 		!cmd.roles ||
-					// 		(cmd.roles && cmd.roles.filter((role) => roles.cache.has(role)).length),
-					// )
-					.map((cmd) => cmd.name)
-					.join(', '),
-			);
+			// TODO - Only show commands that the user can actually use
+			// kind of weird because we need a good way to verify roles in dms
+			data.push(commands.map((cmd) => cmd.name).join(', '));
 			data.push(
 				`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`,
 			);
@@ -56,6 +44,7 @@ module.exports = {
 		if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
 		if (command.description) data.push(`**Description:** ${command.description}`);
 		if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
+		if (command.roles) data.push(`**Roles:** ${prefix}${command.name} ${command.roles}`);
 
 		data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
 

@@ -4,6 +4,7 @@
     "editor.insertSpaces": false,
 		"editor.detectIndentation": false,
 		"cSpell.words": [
-			"cooldown"
+			"cooldown",
+			"cooldowns"
 		]
 }
