@@ -9,10 +9,20 @@ module.exports = {
 	execute(message, args) {
 		const data = [];
 		const { commands } = message.client;
+		const { roles } = message.guild.member(message.author);
 
 		if (!args.length) {
 			data.push("Here's a list of all my commands: ");
-			data.push(commands.map((cmd) => cmd.name).join(', '));
+			data.push(
+				commands
+					.filter(
+						(cmd) =>
+							!cmd.roles ||
+							(cmd.roles && cmd.roles.filter((role) => roles.cache.has(role)).length),
+					)
+					.map((cmd) => cmd.name)
+					.join(', '),
+			);
 			data.push(
 				`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`,
 			);

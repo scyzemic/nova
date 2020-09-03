@@ -1,5 +1,5 @@
 module.exports = {
-	name: 'user-infop',
+	name: 'user-info',
 	description: 'User info!',
 	guildOnly: true,
 	execute(message) {
