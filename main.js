@@ -28,6 +28,8 @@ client.on('message', (message) => {
 		message.channel.send(
 			"they're so fly that when Jim Jones sees them, he goes, BALLIIINNNN!!!",
 		);
+	} else if (command === 'ping') {
+		message.channel.send('Pong.');
 	} else if (command === 'server') {
 		message.channel.send(
 			`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`,
@@ -77,6 +79,23 @@ client.on('message', (message) => {
 				'there was an error trying to prune messages in this channel',
 			);
 		});
+	} else if (command === 'gift') {
+		if (!message.mentions.users.size) {
+			return message.reply('you need to tag a user in order to gift them!');
+		}
+
+		const taggedUser = message.mentions.users.first();
+		const hitChance = Math.random() * 10;
+
+		if (hitChance <= 3.5) {
+			message.channel.send(
+				`You reach into your pocket, but only lint greets you.... you thank ${taggedUser.username} kindly and walk away :derp_squirt:`,
+			);
+		} else {
+			message.channel.send(
+				`You gifted ${taggedUser.username} for their troubles, they gain 5G`,
+			);
+		}
 	}
 });
 
