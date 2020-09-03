@@ -1,84 +1,98 @@
+const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
-// Create a new Discord client instance
 const client = new Discord.Client();
+const cooldowns = new Discord.Collection();
+client.commands = new Discord.Collection();
 
-// Listen for 'ready' event
-// This event only triggers once after login
+const commandFiles = fs.readdirSync('./commands').filter((file) => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	client.commands.set(command.name, command);
+}
+
 client.once('ready', () => {
 	console.log('Singularity bot is online!');
 });
 
-// Listen for 'message' event
 client.on('message', (message) => {
-	// exit early if message doesn't start with the prefix
-	// or the message author is a bot (so we don't have infinite loops)
 	const fanFavorite = message.content.match(/[hH]ow fly (is|are)/);
 	const isValidCommand = fanFavorite || message.content.startsWith(prefix);
+
 	if (!isValidCommand || message.author.bot) return;
 
-	// parse the message content, list of string w/o the prefix
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
-	// parse the command word from the list
-	// TODO - find a way to do this without side effects
-	const command = args.shift().toLocaleLowerCase();
+	const commandName = args.shift().toLocaleLowerCase();
+	const command =
+		client.commands.get(commandName) ||
+		client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (fanFavorite) {
-		message.channel.send(
+		return message.channel.send(
 			"they're so fly that when Jim Jones sees them, he goes, BALLIIINNNN!!!",
 		);
-	} else if (command === 'server') {
-		message.channel.send(
-			`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`,
-		);
-	} else if (command === 'user-info') {
-		message.channel.send(
-			`Your username: ${message.author.username}\nYour ID: ${message.author.id}`,
-		);
-	} else if (command === 'so-fly') {
-		if (!args.length) {
-			return message.channel.send(
-				`You didn't provide any arguments, ${message.author}!`,
+	}
+
+	if (!command) return;
+
+	if (command.guildOnly && message.channel.type === 'dm') {
+		return message.reply("I can't execute that command inside DMs!");
+	}
+
+	if (command.roles) {
+		const { roles } = message.guild.member(message.author);
+		const hasPermission = roles.cache.filter((role) => command.roles.includes(role.name));
+
+		if (!hasPermission) {
+			return message.reply(
+				"you don't have permission to use that command, please ask an Admin for help.",
 			);
 		}
-		return message.channel.send(`${args[0]} is soooo fly!`);
-	} else if (command === 'kick') {
-		if (!message.mentions.users.size) {
-			return message.reply('you need to tag a user in order to kick them!');
+	}
+
+	if (command.usesArgs && !args.length) {
+		let reply = `You didn't provide any arguments, ${message.author}!`;
+
+		if (command.usage) {
+			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
 		}
 
-		const taggedUser = message.mentions.users.first();
-		const hitChance = Math.random() * 10;
+		return message.channel.send(reply);
+	}
 
-		if (hitChance <= 5.5) {
-			message.channel.send(
-				`You Missed! ${taggedUser.username}, gives you a charly horse. You lose 10HP`,
+	// Cooldowns
+	if (!cooldowns.has(commandName)) {
+		cooldowns.set(commandName, new Discord.Collection());
+	}
+
+	const now = Date.now();
+	const timestamps = cooldowns.get(commandName);
+	const cooldownAmount = (command.cooldown || 3) * 1000;
+
+	if (timestamps.has(message.author.id)) {
+		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+
+		if (now < expirationTime) {
+			const timeLeft = (expirationTime - now) / 1000;
+			return message.reply(
+				`please wait ${timeLeft.toFixed(
+					1,
+				)} more second(s) before reusing the \`${commandName}\` command.`,
 			);
-		} else {
-			message.channel.send(`You kicked ${taggedUser.username}, they lose 5HP`);
 		}
-	} else if (
-		(command === 'prune' &&
-			message.guild.member(message.author).roles.highest.name === 'Owner') ||
-		message.guild.member(message.author).roles.highest.name === 'Admin'
-	) {
-		const amount = parseInt(args[0]) + 1;
+	}
 
-		if (isNaN(amount)) {
-			return message.channel.send("that doesn't seem to be a valid number.");
-		} else if (amount <= 1 || amount > 100) {
-			return message.reply('you need to input a number between 1 and 99.');
-		}
+	timestamps.set(message.author.id, now);
+	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-		message.channel.bulkDelete(amount, true).catch((err) => {
-			console.error(err);
-			message.channel.send(
-				'there was an error trying to prune messages in this channel',
-			);
-		});
+	try {
+		command.execute(message, args);
+	} catch (error) {
+		console.error(error);
+		message.reply('there was an error trying to execute that command');
 	}
 });
 
-// Login to Discord with the bots token
 client.login(token);
