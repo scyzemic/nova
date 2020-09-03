@@ -42,73 +42,23 @@ client.on('message', (message) => {
 			"they're so fly that when Jim Jones sees them, he goes, BALLIIINNNN!!!",
 		);
 	} else if (command === 'ping') {
-		message.channel.send('Pong.');
+		client.commands.get('ping').execute(message, args);
 	} else if (command === 'server') {
-		message.channel.send(
-			`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`,
-		);
+		client.commands.get('server').execute(message, args);
 	} else if (command === 'user-info') {
-		message.channel.send(
-			`Your username: ${message.author.username}\nYour ID: ${message.author.id}`,
-		);
+		client.commands.get('user-info').execute(message, args);
 	} else if (command === 'so-fly') {
-		if (!args.length) {
-			return message.channel.send(
-				`You didn't provide any arguments, ${message.author}!`,
-			);
-		}
-		return message.channel.send(`${args[0]} is soooo fly!`);
+		client.commands.get('so-fly').execute(message, args);
 	} else if (command === 'kick') {
-		if (!message.mentions.users.size) {
-			return message.reply('you need to tag a user in order to kick them!');
-		}
-
-		const taggedUser = message.mentions.users.first();
-		const hitChance = Math.random() * 10;
-
-		if (hitChance <= 5.5) {
-			message.channel.send(
-				`You Missed! ${taggedUser.username}, gives you a charly horse. You lose 10HP`,
-			);
-		} else {
-			message.channel.send(`You kicked ${taggedUser.username}, they lose 5HP`);
-		}
+		client.commands.get('kick').execute(message, args);
 	} else if (
 		(command === 'prune' &&
 			message.guild.member(message.author).roles.highest.name === 'Owner') ||
 		message.guild.member(message.author).roles.highest.name === 'Admin'
 	) {
-		const amount = parseInt(args[0]) + 1;
-
-		if (isNaN(amount)) {
-			return message.channel.send("that doesn't seem to be a valid number.");
-		} else if (amount <= 1 || amount > 100) {
-			return message.reply('you need to input a number between 1 and 99.');
-		}
-
-		message.channel.bulkDelete(amount, true).catch((err) => {
-			console.error(err);
-			message.channel.send(
-				'there was an error trying to prune messages in this channel',
-			);
-		});
+		client.commands.get('prune').execute(message, args);
 	} else if (command === 'gift') {
-		if (!message.mentions.users.size) {
-			return message.reply('you need to tag a user in order to gift them!');
-		}
-
-		const taggedUser = message.mentions.users.first();
-		const hitChance = Math.random() * 10;
-
-		if (hitChance <= 3.5) {
-			message.channel.send(
-				`You reach into your pocket, but only lint greets you.... you thank ${taggedUser.username} kindly and walk away :derp_squirt:`,
-			);
-		} else {
-			message.channel.send(
-				`You gifted ${taggedUser.username} for their troubles, they gain 5G`,
-			);
-		}
+		client.commands.get('gift').execute(message, args);
 	}
 });
 
