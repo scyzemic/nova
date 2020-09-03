@@ -2,6 +2,7 @@ module.exports = {
 	name: 'gift',
 	args: true,
 	usage: '<user>',
+	guildOnly: true,
 	description: 'Reward your friends for helping you out!',
 	execute(message) {
 		if (!message.mentions.users.size) {
