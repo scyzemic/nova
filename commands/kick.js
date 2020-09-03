@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'kick',
 	args: true,
+	usage: '<user>',
 	description: 'Whittle down your foes HP!',
 	execute(message) {
 		if (!message.mentions.users.size) {
