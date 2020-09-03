@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'gift',
+	args: true,
 	description: 'Reward your friends for helping you out!',
 	execute(message) {
 		if (!message.mentions.users.size) {
