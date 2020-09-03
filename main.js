@@ -1,8 +1,21 @@
+const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 
 // Create a new Discord client instance
 const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+// Read command file names
+const commandFiles = fs
+	.readdirSync('./commands')
+	.filter((file) => file.endsWith('.js'));
+
+// Set commands to client.commands Collection
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	client.commands.set(command.name, command);
+}
 
 // Listen for 'ready' event
 // This event only triggers once after login
