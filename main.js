@@ -41,7 +41,7 @@ client.on('message', (message) => {
 		return message.reply("I can't execute that command inside DMs!");
 	}
 
-	if (command.roles) {
+	if (command.roles && message.channel.type !== 'dm') {
 		const { roles } = message.guild.member(message.author);
 		const hasPermission = roles.cache.filter((role) => command.roles.includes(role.name));
 

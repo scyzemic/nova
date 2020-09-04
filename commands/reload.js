@@ -2,8 +2,8 @@ module.exports = {
 	name: 'reload',
 	description: 'Reloads a command',
 	args: true,
-	roles: ['Admin', 'Owner'],
-	guildOnly: true,
+	roles: ['Admin', 'Owner', 'coder'],
+	guildOnly: false,
 	usage: '[command name]',
 	execute(message, args) {
 		const commandName = args[0].toLowerCase();
