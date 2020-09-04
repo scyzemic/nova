@@ -4,6 +4,7 @@ module.exports = {
 	guildOnly: true,
 	usesArgs: true,
 	cooldown: 100,
+	usage: '<password>',
 	description: 'See how far the rabbit hole goes!',
 	execute(message) {
 		const roleToGrant = message.guild.roles.cache.find((role) => role.name === 'coder');
