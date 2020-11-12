@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "devmoji": "^2.1.11",
     "discord.js": "^12.4.1"
   },
   "devDependencies": {
