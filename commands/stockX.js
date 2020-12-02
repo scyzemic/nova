@@ -20,8 +20,9 @@ module.exports = {
 			'x-algolia-application-id': 'XW7SBCT9V6',
 			'x-algolia-api-key': '6bfb5abee4dcd8cea8f0ca1ca085c2b3',
 		});
-
 		const stockXUrl = `https://xw7sbct9v6-dsn.algolia.net/1/indexes/products/query?${params}`;
+		const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+
 		fetch(stockXUrl, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -36,21 +37,28 @@ module.exports = {
 				} else if (results.length === 1) {
 					// show the listing
 				} else if (results.length >= 2) {
-					// show top 10q
-					const resultsText = results.reduce(
+					// show top 10
+					const topTen = results.slice(0, 10);
+
+					const resultsText = topTen.reduce(
 						(finalText, result, idx) => `${finalText}${idx + 1}. ${result.name}\n`,
 						'',
 					);
-					const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-					const msg = message.channel.send(
-						'Multiple products found. React to select the correct product:\n' +
-							'```' +
-							resultsText +
-							'```',
-					);
-					emojis.forEach((emoji) => {
-						msg.react(emoji);
-					});
+
+					const initialText =
+						results.length > 10
+							? 'Multiple products found, we could not list them all here are the top 10.'
+							: 'Multiple products found.';
+
+					message.channel
+						.send(
+							`${initialText} React to select the correct product:\`\`\`${resultsText}\`\`\``,
+						)
+						.then((msg) => {
+							topTen.forEach((__, index) => {
+								msg.react(emojis[index]);
+							});
+						});
 				}
 			});
 		// console.log('what am I awaiting here ', result.json());
