@@ -31,14 +31,14 @@ module.exports = {
 			.then(async ({ hits: results }) => {
 				if (!results.length) {
 					message.channel.send(
-						"StockX didn't send anything back, this might now be in their database.",
+						"StockX didn't send anything back, this might not be in their database.",
 					);
 				} else if (results.length === 1) {
 					// show the listing
 				} else if (results.length >= 2) {
-					// show top 10
+					// show top 10q
 					const resultsText = results.reduce(
-						(finalText, result, idx) => `${idx + 1}. ${result.name}\n`,
+						(finalText, result, idx) => `${finalText}${idx + 1}. ${result.name}\n`,
 						'',
 					);
 					const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
