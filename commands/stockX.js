@@ -47,7 +47,7 @@ module.exports = {
 
 					const initialText =
 						results.length > 10
-							? 'Multiple products found, we could not list them all here are the top 10.'
+							? 'Multiple products found, showing the top 10.'
 							: 'Multiple products found.';
 
 					message.channel
