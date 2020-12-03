@@ -1,5 +1,15 @@
 const fetch = require('node-fetch');
 const querystring = require('querystring');
+// const { client } = require('./../main');
+
+const params = querystring.stringify({
+	'x-algolia-agent': 'Algolia for vanilla JavaScript 3.32.0',
+	'x-algolia-application-id': 'XW7SBCT9V6',
+	'x-algolia-api-key': '6bfb5abee4dcd8cea8f0ca1ca085c2b3',
+});
+
+const stockXUrl = `https://xw7sbct9v6-dsn.algolia.net/1/indexes/products/query?${params}`;
+const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
 module.exports = {
 	name: 'stockX',
@@ -15,13 +25,6 @@ module.exports = {
 		const formData = JSON.stringify({
 			params: `query=${query}&facets=*&filters=`,
 		});
-		const params = querystring.stringify({
-			'x-algolia-agent': 'Algolia for vanilla JavaScript 3.32.0',
-			'x-algolia-application-id': 'XW7SBCT9V6',
-			'x-algolia-api-key': '6bfb5abee4dcd8cea8f0ca1ca085c2b3',
-		});
-		const stockXUrl = `https://xw7sbct9v6-dsn.algolia.net/1/indexes/products/query?${params}`;
-		const emojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
 
 		fetch(stockXUrl, {
 			method: 'POST',
@@ -54,10 +57,44 @@ module.exports = {
 						.send(
 							`${initialText} React to select the correct product:\`\`\`${resultsText}\`\`\``,
 						)
-						.then((msg) => {
-							topTen.forEach((__, index) => {
-								msg.react(emojis[index]);
+						.then(async (msg) => {
+							await topTen.forEach(async (__, index) => {
+								await msg.react(emojis[index]);
 							});
+
+							return msg;
+						})
+						.then((msg) => {
+							// TODO: find out why filter() is running for every reaction from line 62
+							const filter = (reaction, user) => {
+								// TODO: figure out how to match reaction.emoji with ones in emojis array (top of file)
+								// looks like reaction.emoji.name will do it
+								console.log('reaction => ', reaction.emoji);
+								console.log('user => ', user.id, user.username);
+								console.log(
+									'message.author => ',
+									message.author.id,
+									message.author.username,
+								);
+								emojis.includes(reaction) && user.id === message.author.id;
+							};
+
+							msg
+								.awaitReactions(filter, {
+									idle: 30000,
+									max: 1,
+									maxUsers: 1,
+									time: 10000,
+								})
+								.then((collected) => {
+									// This is getting undefined because it's considering the initial reactions...
+									console.log(collected.random());
+								})
+								.catch(() => {
+									message.channel.send(
+										'Took to long to select an option. Please try again',
+									);
+								});
 						});
 				}
 			});
