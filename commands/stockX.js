@@ -19,85 +19,75 @@ module.exports = {
 	guildOnly: false,
 	cooldown: 5,
 	description: 'Check a listing on StockX.',
-	execute(message, args) {
+	async execute(authorMessage, args) {
 		const searchTerm = args.join(' ');
 		const query = encodeURIComponent(searchTerm);
 		const formData = JSON.stringify({
 			params: `query=${query}&facets=*&filters=`,
 		});
 
-		fetch(stockXUrl, {
+		const response = await fetch(stockXUrl, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: formData,
-		})
-			.then((response) => response.json())
-			.then(async ({ hits: results }) => {
-				if (!results.length) {
-					message.channel.send(
-						"StockX didn't send anything back, this might not be in their database.",
-					);
-				} else if (results.length === 1) {
-					// show the listing
-				} else if (results.length >= 2) {
-					// show top 10
-					const topTen = results.slice(0, 10);
+		});
 
-					const resultsText = topTen.reduce(
-						(finalText, result, idx) => `${finalText}${idx + 1}. ${result.name}\n`,
-						'',
-					);
+		const { hits: results } = await response.json();
 
-					const initialText =
-						results.length > 10
-							? 'Multiple products found, showing the top 10.'
-							: 'Multiple products found.';
+		if (!results.length) {
+			authorMessage.channel.send(
+				"StockX didn't send anything back, this might not be in their database.",
+			);
+		} else if (results.length === 1) {
+			// show the listing
+		} else if (results.length >= 2) {
+			// show top 10
+			const topTen = results.slice(0, 10);
 
-					message.channel
-						.send(
-							`${initialText} React to select the correct product:\`\`\`${resultsText}\`\`\``,
-						)
-						.then(async (msg) => {
-							await topTen.forEach(async (__, index) => {
-								await msg.react(emojis[index]);
-							});
+			const resultsText = topTen.reduce(
+				(finalText, result, idx) => `${finalText}${idx + 1}. ${result.name}\n`,
+				'',
+			);
 
-							return msg;
-						})
-						.then((msg) => {
-							// TODO: find out why filter() is running for every reaction from line 62
-							const filter = (reaction, user) => {
-								// TODO: figure out how to match reaction.emoji with ones in emojis array (top of file)
-								// looks like reaction.emoji.name will do it
-								console.log('reaction => ', reaction.emoji.name);
-								console.log('user => ', user.id, user.username);
-								console.log(
-									'message.author => ',
-									message.author.id,
-									message.author.username,
-								);
-								emojis.includes(reaction.emoji.name) && user.id === message.author.id;
-							};
+			const initialText =
+				results.length > 10
+					? 'Multiple products found, showing the top 10.'
+					: 'Multiple products found.';
 
-							msg
-								.awaitReactions(filter, {
-									idle: 30000,
-									max: 1,
-									maxUsers: 1,
-									time: 10000,
-								})
-								.then((collected) => {
-									// This is getting undefined because it's considering the initial reactions...
-									console.log(collected.random());
-								})
-								.catch(() => {
-									message.channel.send(
-										'Took to long to select an option. Please try again',
-									);
-								});
-						});
-				}
+			const resultsMessage = await authorMessage.channel.send(
+				`${initialText} React to select the correct product:\`\`\`${resultsText}\`\`\``,
+			);
+
+			topTen.forEach(async (__, index) => await resultsMessage.react(emojis[index]));
+
+			// TODO: find out why filter() is running for every reaction from line 62
+			const filter = (reaction, user) => {
+				// TODO: figure out how to match reaction.emoji with ones in emojis array (top of file)
+				// looks like reaction.emoji.name will do it
+				console.log('reaction => ', reaction.emoji.name);
+				console.log('user => ', user.id, user.username);
+				console.log(
+					'authorMessage.author => ',
+					authorMessage.author.id,
+					authorMessage.author.username,
+				);
+				emojis.includes(reaction.emoji.name) && user.id === authorMessage.author.id;
+			};
+
+			const collected = await resultsMessage.awaitReactions(filter, {
+				idle: 30000,
+				max: 1,
+				maxUsers: 1,
+				time: 10000,
 			});
-		// console.log('what am I awaiting here ', result.json());
+
+			console.log(collected.random());
+
+			// .catch(() => {
+			// 	authorMessage.channel.send(
+			// 		'Took to long to select an option. Please try again',
+			// 	);
+			// });
+		}
 	},
 };
