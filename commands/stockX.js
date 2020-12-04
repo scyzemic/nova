@@ -69,14 +69,14 @@ module.exports = {
 							const filter = (reaction, user) => {
 								// TODO: figure out how to match reaction.emoji with ones in emojis array (top of file)
 								// looks like reaction.emoji.name will do it
-								console.log('reaction => ', reaction.emoji);
+								console.log('reaction => ', reaction.emoji.name);
 								console.log('user => ', user.id, user.username);
 								console.log(
 									'message.author => ',
 									message.author.id,
 									message.author.username,
 								);
-								emojis.includes(reaction) && user.id === message.author.id;
+								emojis.includes(reaction.emoji.name) && user.id === message.author.id;
 							};
 
 							msg
