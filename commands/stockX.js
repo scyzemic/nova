@@ -74,14 +74,18 @@ module.exports = {
 				emojis.includes(reaction.emoji.name) && user.id === authorMessage.author.id;
 			};
 
-			const collected = await resultsMessage.awaitReactions(filter, {
-				idle: 30000,
-				max: 1,
-				maxUsers: 1,
-				time: 10000,
-			});
+			try {
+				const collected = await resultsMessage.awaitReactions(filter, {
+					idle: 30000,
+					max: 1,
+					time: 10000,
+					errors: ['time'],
+				});
 
-			console.log(collected.random());
+				console.log(collected.first());
+			} catch (e) {
+				console.log('there was an error: ', e);
+			}
 
 			// .catch(() => {
 			// 	authorMessage.channel.send(
