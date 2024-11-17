@@ -8,8 +8,5 @@
     "start": "deno run app.ts",
     "register": "deno run --allow-env --allow-net --env-file=.env.local commands.ts",
     "dev": "deno run --allow-net --allow-read --allow-env --env-file=.env.local --watch app.ts"
-  },
-  "imports": {
-    "@std/assert": "jsr:@std/assert@1"
   }
 }
