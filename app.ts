@@ -1,16 +1,20 @@
-import "dotenv/config";
-import express from "express";
+import express from "npm:express";
 import {
   InteractionType,
   InteractionResponseType,
   verifyKeyMiddleware,
-} from "discord-interactions";
+} from "npm:discord-interactions";
 import { getRandomEmoji } from "./utils.ts";
 
 // Create an express app
 const app = express();
 // Get port, or default to 3000
-const PORT = process.env.PORT || 3000;
+const PORT = Deno.env.get("PORT") || 3000;
+
+const PUBLIC_KEY = Deno.env.get("PUBLIC_KEY");
+if (!PUBLIC_KEY) {
+  throw new Error("PUBLIC_KEY is not set");
+}
 
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
@@ -18,7 +22,7 @@ const PORT = process.env.PORT || 3000;
  */
 app.post(
   "/interactions",
-  verifyKeyMiddleware(process.env.PUBLIC_KEY),
+  verifyKeyMiddleware(PUBLIC_KEY),
   async function (req, res) {
     // Interaction type and data
     const { type, data } = req.body;
