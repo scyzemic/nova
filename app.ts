@@ -1,7 +1,7 @@
 import express from "npm:express";
 import {
-  InteractionType,
   InteractionResponseType,
+  InteractionType,
   verifyKeyMiddleware,
 } from "npm:discord-interactions";
 import { getRandomEmoji } from "./utils.ts";
@@ -59,7 +59,7 @@ app.post(
 
     console.error("unknown interaction type", type);
     return res.status(400).json({ error: "unknown interaction type" });
-  }
+  },
 );
 
 app.listen(PORT, () => {

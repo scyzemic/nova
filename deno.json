@@ -1,12 +1,18 @@
 {
-	"version": "1.0.0",
-	"description": "discord bot for singularity",
-	"main": "app.ts",
+  "version": "1.0.0",
+  "description": "discord bot for singularity",
+  "main": "app.ts",
   "author": "Scyzemic",
   "license": "MIT",
   "tasks": {
     "start": "deno run app.ts",
     "register": "deno run --allow-env --allow-net --env-file=.env.local commands.ts",
-    "dev": "deno run --allow-net --allow-read --allow-env --env-file=.env.local --watch app.ts"
+    "dev": "deno run --allow-net --allow-read --allow-env --env-file=.env.local --watch app.ts",
+    "lint": "deno lint",
+    "format": "deno fmt"
+  },
+  "imports": {
+    "@oak/oak": "jsr:@oak/oak@^17.1.3",
+    "discord-interactions": "npm:discord-interactions@^4.1.0"
   }
 }
