@@ -1,12 +1,3 @@
 {
-    "editor.formatOnSave": true,
-    "editor.tabSize": 2,
-    "editor.insertSpaces": false,
-		"editor.detectIndentation": false,
-		"cSpell.words": [
-			"cooldown",
-			"cooldowns",
-			"letmein",
-			"redpill"
-		]
+  "deno.enable": true
 }
