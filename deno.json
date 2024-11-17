@@ -8,8 +8,7 @@
     "start": "deno run app.ts",
     "register": "deno run --allow-env --allow-net --env-file=.env.local commands.ts",
     "dev": "deno run --allow-net --allow-read --allow-env --env-file=.env.local --watch app.ts",
-    "lint": "deno lint",
-    "format": "deno fmt"
+    "pre-commit": "deno fmt && deno lint"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.3",
